@@ -104,13 +104,13 @@ As well as helper functions for finding stats about a cache item:
 .. code-block:: python
 
     def item_num_times_accessed(uri, uuid):
-        # Return the number of times an item has been accessed.
+        """Return the number of times an item has been accessed."""
 
     def item_last_time_accessed(uri, uuid):
-        # Return the datetime when the item was last accessed.
+        """Return the datetime when the item was last accessed."""
 
     def item_num_days_since_last_accessed(uri, uuid):
-        # Return the number of days since the item was last accessed.
+        """Return the number of days since the item was last accessed."""
 
 There will also be helper functions for finding out summary statistics about
 the cache:
