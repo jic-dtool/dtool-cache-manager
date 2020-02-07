@@ -17,14 +17,17 @@ moment this is something that the user would need to do by themselves.
 The purpose of this "dtool-cache-manager" plugin is to make it easier to clean
 up dtool cache directory. It allows users to quickly find out how much disk the
 dtool cache is using and provides commands to clean up files that have not been
-used for a set period of time. Below is a list of user stories illustrating the
-intended usage of the dtool cache manager:
+used for a set period of time. Below are the two most important user stories
+illustrating the intended usage of the dtool cache manager:
 
 - As a consumer of dtool I want to find out how much space the dtool cache
   is using so that I know if I need to clean it up or not.
 
 - As a consumer of dtool I want to be able to free up disk space from the
   dtool cache by removing any files that have not been used in the past month.
+
+Below are two less important user stories from the perspective of a data
+manager.
 
 - As a data manager in a group with a shared dtool cache directory I want to be
   able to delete all the files in the dtool cache that are not actively being
@@ -41,17 +44,19 @@ To view the current state of the dtool cache one can use the command::
 
     dtool cache summary
 
-To safely clean the entire dtool cache one can use the command::
+To safely clean the cache one can use the command::
 
-    dtool cache clean --all 
+    dtool cache clean
 
-To remove files until only 1TB is used::
+The command above removes any files that have not been touched in the
+past month. To clean the cache more or less aggressively one can use
+the ``--older-than`` option. The command below removes any files older
+than seven days.
 
-    dtool cache clean --retain-size=1TB
+To ::
 
-To remove files that have been accessed less than ten times::
+    dtool cache clean --older-than 7
 
-    dtool cache clean --exclude-frequently-accessed=10
 
 Technical details
 -----------------
@@ -72,26 +77,36 @@ can be accessed by adding the code block below to the setup.py file::
         ],
     },
 
-The ``dtool-cache-manager`` package then needs to implement these functions::
+The ``dtool-cache-manager`` package then needs to implement ::
 
     def pre_item_content_abspath(uri, uuid):
-        increment_cache_item_lock_counter(uri, uuid)
-    
-    def post_item_content_abspath(uri, uuid):
-        register_cache_item_access(uri, uuid)
-        decrement_cache_item_lock_counter(uri, uuid)
+        pass
+
+    def pre_item_content_abspath(uri, uuid):
+        pass
 
 The ``dtool-cache-manager`` will also implement a helper function for safely
 removing items from the cache::
 
-    def remove_cache_item_safely(uri, uuid):
-        if cache_item_lock_counter(uri, uuid) == 0:
-            _remove_cache_item(uri, uuid)
+    def remove_cache_item(uri, uuid):
+        pass
 
 As well as helper functions for finding stats about a cache item::
 
-    def num_times_accessed(uri, uuid):
+    def item_num_times_accessed(uri, uuid):
         # Return the number of times an item has been accessed.
 
-    def last_time_accessed(uri, uuid):
+    def item_last_time_accessed(uri, uuid):
         # Return the datetime when the item was last accessed.
+
+    def item_num_days_since_last_accessed(uri, uuid):
+        # Return the number of days since the item was last accessed.
+
+There will also be helper functions for finding out summary statistics about
+the cache::
+
+    def cache_size():
+        pass
+
+    def cache_num_items():
+        pass
