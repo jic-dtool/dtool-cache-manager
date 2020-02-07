@@ -61,12 +61,16 @@ To ::
 Technical details
 -----------------
 
-In the dtoolcore the content of items are accessed using the call::
+In the dtoolcore the content of items are accessed using the call:
+
+.. code-bock:: python
 
     dtoolcore.DataSet.item_content_abspath
 
 This call includes a calls to pre- and a post-hook methods. These
-can be accessed by adding the code block below to the setup.py file::
+can be accessed by adding the code block below to the setup.py file:
+
+.. code-block:: python
 
     entry_points={
         "dtool.pre_item_content_abspath": [
@@ -77,7 +81,9 @@ can be accessed by adding the code block below to the setup.py file::
         ],
     },
 
-The ``dtool-cache-manager`` package then needs to implement ::
+The ``dtool-cache-manager`` package then needs to implement:
+
+.. code-block:: python
 
     def pre_item_content_abspath(uri, uuid):
         pass
@@ -86,12 +92,16 @@ The ``dtool-cache-manager`` package then needs to implement ::
         pass
 
 The ``dtool-cache-manager`` will also implement a helper function for safely
-removing items from the cache::
+removing items from the cache:
+
+.. code-block:: python
 
     def remove_cache_item(uri, uuid):
         pass
 
-As well as helper functions for finding stats about a cache item::
+As well as helper functions for finding stats about a cache item:
+
+.. code-block:: python
 
     def item_num_times_accessed(uri, uuid):
         # Return the number of times an item has been accessed.
@@ -103,7 +113,9 @@ As well as helper functions for finding stats about a cache item::
         # Return the number of days since the item was last accessed.
 
 There will also be helper functions for finding out summary statistics about
-the cache::
+the cache:
+
+.. code-block:: python
 
     def cache_size():
         pass
