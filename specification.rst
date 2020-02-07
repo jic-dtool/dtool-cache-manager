@@ -63,7 +63,7 @@ Technical details
 
 In the dtoolcore the content of items are accessed using the call:
 
-.. code-bock:: python
+.. code-block:: python
 
     dtoolcore.DataSet.item_content_abspath
 
