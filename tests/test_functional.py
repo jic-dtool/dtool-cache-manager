@@ -18,6 +18,7 @@ def test_functional():
 
     # Log that that item was accessed.
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
+    log_item_size_in_bytes(dataset_uuid=dataset_uuid, item_id=item_id, size_in_bytes=13)
 
     # Create a timestamp to compare it to.
     time.sleep(0.1)    
@@ -38,7 +39,17 @@ def test_functional():
 
     # Now we access the second item.
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=second_item_id)
+    log_item_size_in_bytes(dataset_uuid=dataset_uuid, item_id=second_item_id, size_in_bytes=20)
     
     # Ensure that access to the second item is more recent than the first.
     last_accessed_item2 = item_last_accessed(dataset_uuid=dataset_uuid, item_id=second_item_id)
     assert last_accessed_item2 > last_accessed
+
+    # Check the total size of the cache.
+    assert 33 == cache_size_in_bytes()
+
+    # Delete an item from the cache.
+    remove_cache_item(dataset_uuid=dataset_uuid, item_id=second_item_id)
+
+    # Check that the size of the cache has been updated.
+    assert 13 == cache_size_in_bytes()
