@@ -20,6 +20,10 @@ def test_functional():
     dataset_uuid = str(uuid.uuid4())
     item_id = dtoolcore.utils.generate_identifier("path/to/file.txt")
 
+    # initialize popularity counter
+
+
+
     # Log that that item was accessed.
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
     log_item_size_in_bytes(dataset_uuid=dataset_uuid, item_id=item_id, size_in_bytes=13)
@@ -39,7 +43,7 @@ def test_functional():
     # Create an identifier for a second item. This has never been accessed before.
     second_item_id = dtoolcore.utils.generate_identifier("another/file.txt")
     with pytest.raises(KeyError):
-        item_last_accessed(dataset_uuid=dataset_uuid, item_id=second_item_id)
+        item_last_accessed(dataset_uuid=dataset_uuid, item_id=second_item_id) 
 
     # Now we access the second item.
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=second_item_id)
@@ -65,7 +69,10 @@ def test_functional():
         remove_cache_item(dataset_uuid=dataset_uuid, item_id="dont_exist")
 
     # Test the num_time_accessed functionality.
-    item_num_times_accessed(dataset_uuid, item_id) == 1
+    assert item_num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 1
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
-    item_num_times_accessed(dataset_uuid, item_id) == 3
+    assert item_num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 3
+    log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
+    assert item_num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 4
+
