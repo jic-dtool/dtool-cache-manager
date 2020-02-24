@@ -10,6 +10,9 @@ def test_functional():
     from dtool_cache_manager import (
         log_item_accessed,
         item_last_accessed,
+        log_item_size_in_bytes,
+        cache_size_in_bytes, 
+        remove_cache_item,
     )
 
     # Create info for a dummy item in a dataset.
@@ -53,3 +56,11 @@ def test_functional():
 
     # Check that the size of the cache has been updated.
     assert 13 == cache_size_in_bytes()
+
+    # Make sure that remove_cache_item raises KeyError if uuid/item_id doesn't exist.
+    with pytest.raises(KeyError):
+        remove_cache_item(dataset_uuid="dont_exit", item_id=second_item_id)
+    with pytest.raises(KeyError):
+        remove_cache_item(dataset_uuid=dataset_uuid, item_id="dont_exist")
+
+    
