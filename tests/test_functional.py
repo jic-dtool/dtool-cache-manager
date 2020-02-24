@@ -13,6 +13,7 @@ def test_functional():
         log_item_size_in_bytes,
         cache_size_in_bytes, 
         remove_cache_item,
+        item_num_times_accessed,
     )
 
     # Create info for a dummy item in a dataset.
@@ -63,4 +64,8 @@ def test_functional():
     with pytest.raises(KeyError):
         remove_cache_item(dataset_uuid=dataset_uuid, item_id="dont_exist")
 
-    
+    # Test the num_time_accessed functionality.
+    item_num_times_accessed(dataset_uuid, item_id) == 1
+    log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
+    log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
+    item_num_times_accessed(dataset_uuid, item_id) == 3
