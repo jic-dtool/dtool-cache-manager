@@ -1,3 +1,5 @@
+
+import os
 import datetime
 import time
 import uuid
@@ -5,6 +7,10 @@ import uuid
 import pytest
 
 import dtoolcore.utils
+
+from . import tmp_dir_fixture  # NOQA
+from . import tmp_env_var
+
 
 def test_functional():
     from dtool_cache_manager import (
@@ -18,6 +24,7 @@ def test_functional():
 
     # Create info for a dummy item in a dataset.
     dataset_uuid = str(uuid.uuid4())
+    full_item_uri = "path/to/file.txt"
     item_id = dtoolcore.utils.generate_identifier("path/to/file.txt")
 
     # initialize popularity counter
@@ -76,3 +83,18 @@ def test_functional():
     log_item_accessed(dataset_uuid=dataset_uuid, item_id=item_id)
     assert item_num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 4
 
+
+def test_get_cache_db_prefix():  # NOQA
+    from dtool_cache_manager import get_cache_db_prefix
+
+    with tmp_env_var("DTOOL_CACHE_DIRECTORY", "/tmp"):
+        assert get_cache_db_prefix() == "/tmp"
+
+
+def test_database_creation(tmp_dir_fixture):  # NOQA
+    from dtool_cache_manager import get_database_connection
+    import sqlite3
+
+    db_fpath = os.path.join(tmp_dir_fixture, "dc_sqlite3.db")
+    con = get_database_connection(db_fpath)
+    assert isinstance(con, sqlite3.Connection)
