@@ -6,7 +6,8 @@ import sqlite3
 
 import sqlite3 as lite
 
-con = lite.connect('dtool_cache_sqlite3.db') # global connection 
+#con = lite.connect('dtool_cache_sqlite3.db') # global connection
+con = lite.connect(":memory:")
 with con:
     cur = con.cursor()
     cur.execute('''CREATE TABLE dtcache
@@ -15,14 +16,14 @@ with con:
                 size_in_byte INT     NOT NULL,
                 last_access_time  TEXT  NOT NULL );''')
 
-print "Table created successfully"
+print("Table created successfully")
 '''
-# Many  inserts many 
-records = [  
+# Many  inserts many
+records = [
              ('2020-02-24', 'ABC', 'XYZ', 1000, 45.00),
              ('2020-02-24', 'BUY', 'IBM', 1000, 45.00),
              ('2020-02-24', 'BUY', 'IBM', 1000, 45.00),
-]             
+]
 c.executemany('INSERT INTO dtcache VALUES (?,?,?,?,?)', records)
 
 '''
@@ -37,17 +38,17 @@ def log_item_accessed(dataset_uuid, item_id):
 
     MY_AMAZING_DB[dataset_uuid][item_id]["last_access_time"] = datetime.datetime.utcnow()
 
-    # set counter here 
+    # set counter here
     if not "times_item_accessed" in MY_AMAZING_DB[dataset_uuid][item_id]: # initialise its not already
        MY_AMAZING_DB[dataset_uuid][item_id]["times_item_accessed"] = 1
-    else:   
+    else:
        MY_AMAZING_DB[dataset_uuid][item_id]["times_item_accessed"] += 1     # update the counter
 
 def log_item_size_in_bytes(dataset_uuid, item_id, size_in_bytes):
     MY_AMAZING_DB[dataset_uuid][item_id]["size_in_bytes"] = size_in_bytes
-    
+
 def item_last_accessed(dataset_uuid, item_id):
-    "Get time stamp for last time an item wass accessed " 
+    "Get time stamp for last time an item wass accessed "
 
     if dataset_uuid not in MY_AMAZING_DB:
        raise KeyError('Dataset doesnt exists: {}'.format(dataset_uuid))
@@ -76,9 +77,9 @@ def remove_cache_item(dataset_uuid, item_id):
 
 def item_num_times_accessed(dataset_uuid, item_id):
     "Return the number of times this item acccesed "
-    
-    if not "times_item_accessed" in MY_AMAZING_DB[dataset_uuid][item_id]:   
+
+    if not "times_item_accessed" in MY_AMAZING_DB[dataset_uuid][item_id]:
        raise KeyError
 
     return  MY_AMAZING_DB[dataset_uuid][item_id]["times_item_accessed"]
- 
+
