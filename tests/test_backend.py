@@ -2,6 +2,7 @@
 import os
 import datetime
 import uuid
+import time
 
 import dtoolcore
 
@@ -43,16 +44,23 @@ def test_functional(tmp_dir_fixture):  # NOQA
 
     bm.put_entry(dataset_uuid=dataset_uuid, item_id=item_id, size_in_bytes=size)
 
-
+    # Test last_access_time method.
     first_access_time = bm.last_access_time(dataset_uuid=dataset_uuid, item_id=item_id)
     assert isinstance(first_access_time, datetime.datetime)
 
+    # Test num_times_accessed method.
+    assert bm.num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 1
+
     # Make sure duplicates are not created.
+    time.sleep(0.1)
     bm.put_entry(dataset_uuid=dataset_uuid, item_id=item_id, size_in_bytes=size)
 
     # Make sure that the time stamp has been updated.
     second_access_time = bm.last_access_time(dataset_uuid=dataset_uuid, item_id=item_id)
     assert first_access_time != second_access_time
+
+    # Make sure that the num_times_accessed has been updated.
+    assert bm.num_times_accessed(dataset_uuid=dataset_uuid, item_id=item_id) == 2
 
     assert bm.total_size_in_bytes() == 13
     assert bm.total_number_of_entries() == 1

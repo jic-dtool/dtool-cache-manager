@@ -32,7 +32,8 @@ class BackendManager(object):
               dataset_uuid     TEXT NOT NULL,
               item_id          TEXT NOT NULL,
               size_in_bytes     INTEGER  NOT NULL,
-              last_access_time TIMESTAMP NOT NULL );
+              last_access_time TIMESTAMP NOT NULL,
+              num_times_accessed INTEGER NOT NULL DEFAULT 1);
         ''')
 
     def _generate_unique_id(self, dataset_uuid, item_id):
@@ -45,7 +46,9 @@ class BackendManager(object):
         unique_id = self._generate_unique_id(dataset_uuid, item_id)
         entry = (unique_id, dataset_uuid, item_id, size_in_bytes, now)
         self.cur.execute(
-            '''INSERT OR REPLACE INTO dtcache VALUES (?,?,?,?,?);''',
+            '''INSERT OR REPLACE INTO dtcache VALUES (?,?,?,?,?,
+            (SELECT num_times_accessed FROM dtcache WHERE unique_id = "{}") + 1
+            );'''.format(unique_id),
             entry
         )
 
@@ -58,6 +61,16 @@ class BackendManager(object):
         )
         last_access_time = self.cur.fetchone()[0]
         return last_access_time
+
+    def num_times_accessed(self, dataset_uuid, item_id):
+        """Return number of times the entry has been accessed."""
+        unique_id = self._generate_unique_id(dataset_uuid, item_id)
+        self.cur.execute('''
+            SELECT num_times_accessed FROM dtcache WHERE unique_id = "{}";
+        '''.format(unique_id)
+        )
+        num_times_accessed = self.cur.fetchone()[0]
+        return num_times_accessed
 
     def total_size_in_bytes(self):
         """Return the total size in bytes."""
