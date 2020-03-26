@@ -28,21 +28,36 @@ class BackendManager(object):
         self.cur.execute('''
             CREATE TABLE IF NOT EXISTS dtcache
             (
+              unique_id       TEXT NOT NULL PRIMARY KEY,
               dataset_uuid     TEXT NOT NULL,
               item_id          TEXT NOT NULL,
               size_in_bytes     INTEGER  NOT NULL,
               last_access_time TIMESTAMP NOT NULL );
         ''')
 
+    def _generate_unique_id(self, dataset_uuid, item_id):
+        return dataset_uuid + item_id
 
-    def add_new_entry(self, dataset_uuid, item_id, size_in_bytes):
-        """Add a new entry to the backend."""
+
+    def put_entry(self, dataset_uuid, item_id, size_in_bytes):
+        """Put entry to the backend."""
         now = datetime.datetime.utcnow()
-        entry = (dataset_uuid, item_id, size_in_bytes, now)
+        unique_id = self._generate_unique_id(dataset_uuid, item_id)
+        entry = (unique_id, dataset_uuid, item_id, size_in_bytes, now)
         self.cur.execute(
-            '''INSERT INTO dtcache VALUES (?,?,?,?);''',
+            '''INSERT OR REPLACE INTO dtcache VALUES (?,?,?,?,?);''',
             entry
         )
+
+    def last_access_time(self, dataset_uuid, item_id):
+        """Return time the entry was last accessed."""
+        unique_id = self._generate_unique_id(dataset_uuid, item_id)
+        self.cur.execute('''
+            SELECT last_access_time FROM dtcache WHERE unique_id = "{}";
+        '''.format(unique_id)
+        )
+        last_access_time = self.cur.fetchone()[0]
+        return last_access_time
 
     def total_size_in_bytes(self):
         """Return the total size in bytes."""
